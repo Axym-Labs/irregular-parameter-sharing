@@ -9,23 +9,22 @@ export PYTHONPATH="$ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 PYTHON="${PYTHON:-/home/davwis/main/exploration/_env/bin/python}"
 
 "$PYTHON" scripts/run_butterfly_lm.py \
-  --out runs/butterfly_100m_d16_w768_g16_k128_search12 \
-  --tokenizer hf \
-  --tokenizer-path /home/davwis/.cache/huggingface/hub/models--roberta-base/snapshots/e2da8e2f811d1448a5b465c236feacd80ffbac7b \
+  --out runs/butterfly_100m_d16_w1024_g16_k128_search12 \
+  --tokenizer gpt2 \
   --max-tokens 100000000 \
   --val-tokens 2000000 \
   --shard-limit 32 \
   --seq-len 256 \
-  --batch-size 24 \
-  --eval-batch-size 16 \
-  --grad-accum 2 \
+  --batch-size 12 \
+  --eval-batch-size 4 \
+  --grad-accum 4 \
   --final-steps 5000 \
   --search-steps 800 \
   --search-budget 12 \
   --eval-every 500 \
   --eval-steps 30 \
-  --dim 768 \
-  --heads 12 \
+  --dim 1024 \
+  --heads 16 \
   --depth 16 \
   --groups 16 \
   --shared-blocks 128 \

@@ -34,3 +34,19 @@
   PyTorch cannot see CUDA: `torch.cuda.is_available() == False`,
   `torch.cuda.device_count() == 0`, and `/dev/nvidia*` is not exposed inside the
   sandbox, although `nvidia-smi` can query the host GPU.
+- INITIATION (2026-07-03): Sandbox restrictions were lifted. Verified
+  `torch.cuda.is_available() == True` on `NVIDIA GeForce RTX 5090`, shell
+  network works, and `gh` auth is valid. Created public GitHub repo
+  `https://github.com/Axym-Labs/irregular-parameter-sharing` and pushed local
+  `main`.
+- VERIFICATION (2026-07-03): CUDA smoke test passed in `runs/smoke_cuda`
+  with `Device: cuda`.
+- VERIFICATION (2026-07-03): Profiled the larger architecture. Shared
+  depth-16 width-1024 model has 135,760,896 total params and 84,035,584
+  non-embedding params. Unshared reference has 186,338,304 total params and
+  134,612,992 non-embedding params. Both fit on the RTX 5090 with batch size 12,
+  gradient accumulation 4, sequence length 256.
+- DECISION (2026-07-03): Updated `scripts/run_large_5090.sh` to use GPT-2 BPE,
+  100M OpenWebText tokens, depth 16, width 1024, 16 width groups, 128 shared
+  butterfly blocks, search budget 12, search proxy 800 steps, final 5000-step
+  runs over seeds 0, 1, and 2.
