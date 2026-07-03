@@ -10,7 +10,7 @@ both depth and width without layout search or butterfly-specific structure.
 ```bash
 PYTHONPATH=src python scripts/run_shared_basis_lm.py \
   --out runs/shared_basis_smoke \
-  --device cpu \
+  --device cuda \
   --steps 5 \
   --dim 16 \
   --depth 2 \

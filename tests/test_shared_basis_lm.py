@@ -1,4 +1,5 @@
 import torch
+import pytest
 
 from irregular_parameter_sharing.shared_basis_lm import (
     SharedBasisGPT,
@@ -6,6 +7,7 @@ from irregular_parameter_sharing.shared_basis_lm import (
     ToyRunConfig,
     UnsharedGroupedGPT,
     count_parameters,
+    device_from_name,
     run_toy_suite,
 )
 
@@ -56,6 +58,12 @@ def test_shared_basis_gpt_is_forward_compatible_and_reduces_mlp_parameters() -> 
     assert count_parameters(shared.mlp) < count_parameters(unshared.mlp)
 
 
+def test_device_selection_is_cuda_only() -> None:
+    with pytest.raises(ValueError, match="CUDA-only"):
+        device_from_name("cpu")
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="shared-basis toy suite is CUDA-only")
 def test_toy_suite_writes_structural_artifacts(tmp_path) -> None:
     result = run_toy_suite(
         ToyRunConfig(
@@ -73,7 +81,7 @@ def test_toy_suite_writes_structural_artifacts(tmp_path) -> None:
             rank=1,
             expansion=2,
             seed=5,
-            device="cpu",
+            device="cuda",
         ),
         out=tmp_path,
     )

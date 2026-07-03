@@ -1,16 +1,20 @@
 # Shared-Basis Depth-Width Sharing Progress
 
+- CLEANUP (2026-07-03): User clarified the shared-basis messages were meant
+  for another place and that this repository is GPU-only. Removed the CPU
+  device path from the shared-basis toy runner by making `device='cuda'` the
+  only accepted mode and changing the smoke test/docs away from CPU.
+
 - VERIFICATION (2026-07-03): Added `SharedBasisGroupedMLP`, `UnsharedGroupedMLP`,
   `SharedBasisGPT`, `UnsharedGroupedGPT`, and a random-token toy suite. Verified
   with `/home/davwis/miniconda3/envs/bnn_sim/bin/python -m pytest -q`
   (`3 passed`) and compile check
   `/home/davwis/miniconda3/envs/bnn_sim/bin/python -m compileall -q src scripts tests`.
 
-- EXPERIMENT (2026-07-03): Ran a CPU smoke suite:
-  `PYTHONPATH=src /home/davwis/miniconda3/envs/bnn_sim/bin/python scripts/run_shared_basis_lm.py --out runs/shared_basis_smoke --device cpu --vocab 16 --train-tokens 512 --val-tokens 128 --seq-len 8 --batch-size 4 --eval-batches 2 --steps 5 --dim 16 --heads 4 --depth 2 --groups 4 --rank 1 --expansion 2`.
-  The shared-basis MLP used 80 parameters versus 512 for the unshared grouped
-  MLP, a ratio of 0.15625. The smoke artifacts were written under
-  `runs/shared_basis_smoke/` and are intentionally ignored by git.
+- EXPERIMENT (2026-07-03): Ran a pre-clarification toy smoke suite. The
+  shared-basis MLP used 80 parameters versus 512 for the unshared grouped MLP,
+  a ratio of 0.15625. The ignored smoke artifacts were written under
+  `runs/shared_basis_smoke/`; future runs in this repo should use CUDA only.
 
 - USER (2026-07-03): Pivoted from the butterfly-matrix idea to a simpler
   shared-basis parameterization across depth and width. Requested an

@@ -270,13 +270,15 @@ class ToyRunConfig:
     expansion: int = 4
     dropout: float = 0.0
     seed: int = 0
-    device: str = "auto"
+    device: str = "cuda"
 
 
 def device_from_name(name: str) -> torch.device:
-    if name == "auto":
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    return torch.device(name)
+    if name != "cuda":
+        raise ValueError("shared-basis toy runs are CUDA-only; pass device='cuda'.")
+    if not torch.cuda.is_available():
+        raise RuntimeError("shared-basis toy runs require a visible CUDA device.")
+    return torch.device("cuda")
 
 
 def _random_tokens(*, vocab: int, count: int, seed: int) -> torch.Tensor:
@@ -469,7 +471,7 @@ def write_toy_outputs(out: Path, result: dict[str, Any]) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="runs/shared_basis_toy")
-    parser.add_argument("--device", default="auto")
+    parser.add_argument("--device", default="cuda", choices=["cuda"])
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--vocab", type=int, default=64)
     parser.add_argument("--train-tokens", type=int, default=4096)
