@@ -625,11 +625,18 @@ def write_outputs(out: Path, result: dict) -> None:
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def append_event(out: Path, event: dict) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    with (out / "live.jsonl").open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"time": time.time(), **event}) + "\n")
+
+
 def run_suite(args: argparse.Namespace) -> None:
     start = time.time()
     device = device_from_arg(args.device)
     torch.set_float32_matmul_precision("high")
     out = Path(args.out)
+    append_event(out, {"event": "start", "config": vars(args), "device": str(device)})
     if args.token_path:
         token_path = Path(args.token_path)
     else:
@@ -642,6 +649,16 @@ def run_suite(args: argparse.Namespace) -> None:
         )
     train_data, val_data = load_split(token_path, args.val_tokens)
     vocab_size = infer_vocab_size(args, token_path)
+    append_event(
+        out,
+        {
+            "event": "data_ready",
+            "token_path": str(token_path),
+            "train_tokens": int(train_data.numel()),
+            "val_tokens": int(val_data.numel()),
+            "vocab_size": vocab_size,
+        },
+    )
 
     position_count = args.depth * int(math.log2(args.groups)) * (args.groups // 2)
     if args.shared_blocks >= position_count:
@@ -675,9 +692,19 @@ def run_suite(args: argparse.Namespace) -> None:
                     "schedule": schedule.tolist(),
                 }
             )
+            append_event(out, {"event": "search_trial_complete", **search_records[-1]})
         best = min(search_records, key=lambda r: r["val_loss"])
         best_schedule = torch.tensor(best["schedule"], dtype=torch.long)
         best_layout_seed = int(best["layout_seed"])
+        append_event(
+            out,
+            {
+                "event": "search_complete",
+                "best_trial": best["trial"],
+                "best_layout_seed": best_layout_seed,
+                "best_val_loss": best["val_loss"],
+            },
+        )
 
     max_schedule = max_depth_distance_schedule(args.depth, args.groups, args.shared_blocks)
     unshared = unshared_schedule(args.depth, args.groups)
@@ -705,6 +732,7 @@ def run_suite(args: argparse.Namespace) -> None:
                 "schedule_stats": schedule_stats(schedule),
             }
         )
+        append_event(out, {"event": "final_run_complete", **runs[-1]})
 
     requested = set(args.final_variants)
     for seed in final_seeds:
