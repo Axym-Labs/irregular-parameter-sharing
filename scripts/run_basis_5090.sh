@@ -9,7 +9,7 @@ export PYTHONPATH="$ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 PYTHON="${PYTHON:-/home/davwis/main/exploration/_env/bin/python}"
 
 "$PYTHON" scripts/run_basis_lm.py \
-  --out runs/basis_100m_d16_w1024_r128_r512 \
+  --out runs/basis_100m_d16_w1024_bs4_r128_r512 \
   --tokenizer gpt2 \
   --max-tokens 100000000 \
   --val-tokens 2000000 \
@@ -25,5 +25,6 @@ PYTHON="${PYTHON:-/home/davwis/main/exploration/_env/bin/python}"
   --heads 16 \
   --depth 16 \
   --variants shared basis_r128 lowrank_r8 basis_r512 lowrank_r32 unshared \
+  --basis-scale 4.0 \
   --seeds 0,1,2 \
   --device cuda

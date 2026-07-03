@@ -1,5 +1,19 @@
 # Shared-Basis Parameter Field Progress
 
+- EXPERIMENT (2026-07-03): Ran a one-seed 500-step scale sweep for the high-rank
+  pair on 98M train tokens / 2M validation tokens, depth 16, width 1024. Search
+  budget was four `basis_scale` values: 0.5, 1.0, 2.0, and 4.0. At equal
+  factorized parameter budget, `basis_r512` beat `lowrank_r32` at all four
+  scales: 5.9980 vs 6.0254 CE at 0.5, 6.0030 vs 6.0271 CE at 1.0, 5.9996 vs
+  6.0238 CE at 2.0, and 5.9964 vs 6.0181 CE at 4.0. Chose `basis_scale=4.0`
+  for the multi-seed run because it produced the best absolute high-rank
+  shared-basis validation CE while using the same scale for the matched
+  low-rank control.
+- EXPERIMENT (2026-07-03): Ran a one-seed 500-step pilot over all main variants
+  on the 100M-token cache. Final validation CE: `shared` 6.2334,
+  `basis_r128` 6.1089, matched `lowrank_r8` 6.0569, `basis_r512` 6.0030,
+  matched `lowrank_r32` 6.0271, and `unshared` 6.0428. This is promising but
+  not decisive because it is a short one-seed pilot.
 - VERIFICATION (2026-07-03): CUDA smoke passed after adding GPT-style
   small-normal initialization and the `lowrank_rN` control. Command wrote
   `runs/basis_smoke_v2/` with variants `shared`, `basis_r4`, `lowrank_r2`,
