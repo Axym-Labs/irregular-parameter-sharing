@@ -21,3 +21,9 @@
   parameters, 201,394,176 non-embedding parameters, and 134,217,728 MLP-bank
   parameters. Hard-sharing variants have 186,010,624 total parameters,
   134,285,312 non-embedding parameters, and 67,108,864 MLP-bank parameters.
+- RUN CONTROL (2026-07-03): First long run at batch size 12 / grad accumulation
+  4 was stopped after 6/12 search trials because active GPU memory reached
+  about 31.4GB on the smaller hard-sharing model, leaving too little headroom
+  for the larger unshared dense baseline. Relaunching with batch size 8 and
+  grad accumulation 6 preserves the effective batch size of 48 sequences per
+  optimizer step while reducing activation memory.

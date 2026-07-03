@@ -9,15 +9,15 @@ export PYTHONPATH="$ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
 PYTHON="${PYTHON:-/home/davwis/main/exploration/_env/bin/python}"
 
 "$PYTHON" scripts/run_hard_block_lm.py \
-  --out runs/hard_block_100m_d16_w1024_c16_b128_search12 \
+  --out runs/hard_block_100m_d16_w1024_c16_b128_b8ga6_search12 \
   --tokenizer gpt2 \
   --max-tokens 100000000 \
   --val-tokens 2000000 \
   --shard-limit 32 \
   --seq-len 256 \
-  --batch-size 12 \
+  --batch-size 8 \
   --eval-batch-size 4 \
-  --grad-accum 4 \
+  --grad-accum 6 \
   --search-steps 800 \
   --final-steps 5000 \
   --eval-every 500 \
