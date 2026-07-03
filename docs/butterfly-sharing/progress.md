@@ -50,3 +50,8 @@
   100M OpenWebText tokens, depth 16, width 1024, 16 width groups, 128 shared
   butterfly blocks, search budget 12, search proxy 800 steps, final 5000-step
   runs over seeds 0, 1, and 2.
+- PIVOT (2026-07-03): User provided a better framing: butterfly matrices are a
+  plausible structured width-mixing primitive, but the cleaner experiment is a
+  tensorized/shared-basis parameterization across layer and channel axes. Stopped
+  the butterfly-only long run after 5/12 search candidates. Treat the partial
+  search trace as aborted engineering evidence only, not as a scientific result.

@@ -2,20 +2,30 @@
 
 Experiments for irregular parameter sharing in Transformers.
 
-The current experiment is a simple shared-basis architecture: split the model
-width into groups, keep one small bank of basis MLP blocks, and learn mixture
-coefficients for every `(layer, width_group)`. This shares parameters across
-both depth and width without layout search or butterfly-specific structure.
+The current experiment is a tensorized shared-basis parameter field for
+Transformer MLP weights:
+
+```text
+W_l = W_shared + sum_r a[l, r] * B_r
+```
+
+The first implementation uses low-rank basis matrices `B_r = u_r v_r^T`. This
+shares basis matrices across depth and width while keeping an ordinary dense MLP
+component. The main controls are an ordinary unshared Transformer MLP, a fully
+shared MLP, and per-layer low-rank residual MLPs with matched factorized
+parameter counts.
 
 ```bash
-PYTHONPATH=src python scripts/run_shared_basis_lm.py \
-  --out runs/shared_basis_smoke \
+PYTHONPATH=src python scripts/run_basis_lm.py \
+  --out runs/basis_smoke \
   --device cuda \
+  --token-path /home/davwis/main/exploration/irregular_token_lm/cache/openwebtext_gpt2_200000.npy \
+  --vocab-size 50257 \
+  --val-tokens 20000 \
   --steps 5 \
-  --dim 16 \
+  --dim 128 \
   --depth 2 \
-  --groups 4 \
-  --rank 1
+  --variants shared basis_r4 lowrank_r2 unshared
 ```
 
 The prior butterfly experiment asked whether sharing small butterfly-style
@@ -28,8 +38,10 @@ on local OpenWebText GPT-2 tokens and compares:
 - the best layout from a fixed random search budget,
 - and a maximum-depth-distance sharing layout.
 
-The shared-basis task arc is in `docs/shared-basis-sharing/`. The earlier
-butterfly task arc is in `docs/butterfly-sharing/`.
+The tensorized basis-field task arc is in `docs/shared-basis-field/`.
+The earlier grouped shared-basis toy task arc is in
+`docs/shared-basis-sharing/`, and the earlier butterfly task arc is in
+`docs/butterfly-sharing/`.
 
 ## Quick smoke test
 
