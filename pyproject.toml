@@ -1,0 +1,19 @@
+[project]
+name = "irregular-parameter-sharing"
+version = "0.1.0"
+description = "Butterfly-block Transformer experiments for irregular parameter sharing across depth and width."
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "pandas",
+  "pyarrow",
+  "tiktoken",
+  "torch",
+  "transformers",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
