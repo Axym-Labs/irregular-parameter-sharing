@@ -2,30 +2,37 @@
 
 Experiments for irregular parameter sharing in Transformers.
 
-The current experiment is a tensorized shared-basis parameter field for
-Transformer MLP weights:
+The current experiment tests hard irregular sharing of exact Transformer MLP
+hidden-chunk parameter blocks. A standard dense MLP can be written as a sum
+over hidden-width chunks:
 
 ```text
-W_l = W_shared + sum_r a[l, r] * B_r
+MLP_l(x) = sum_c GELU(x W1[id(l, c)]) W2[id(l, c)]
 ```
 
-The first implementation uses low-rank basis matrices `B_r = u_r v_r^T`. This
-shares basis matrices across depth and width while keeping an ordinary dense MLP
-component. The main controls are an ordinary unshared Transformer MLP, a fully
-shared MLP, and per-layer low-rank residual MLPs with matched factorized
-parameter counts.
+The unshared baseline gives every `(layer, hidden_chunk)` position a unique
+block ID, which is equivalent to an ordinary dense Transformer MLP without
+biases. The hard-sharing variants reuse exact block IDs across depth and hidden
+chunks using balanced random layouts, a maximum-depth-distance layout, and a
+best-of-N random-layout search.
 
 ```bash
-PYTHONPATH=src python scripts/run_basis_lm.py \
-  --out runs/basis_smoke \
+PYTHONPATH=src python scripts/run_hard_block_lm.py \
+  --out runs/hard_block_smoke \
   --device cuda \
   --token-path /home/davwis/main/exploration/irregular_token_lm/cache/openwebtext_gpt2_200000.npy \
   --vocab-size 50257 \
   --val-tokens 20000 \
-  --steps 5 \
+  --search-steps 3 \
+  --final-steps 3 \
+  --eval-every 3 \
   --dim 128 \
   --depth 2 \
-  --variants shared basis_r4 lowrank_r2 unshared
+  --chunks 4 \
+  --shared-blocks 4 \
+  --search-budget 2 \
+  --final-variants unshared random max_distance best_random \
+  --final-seeds 0,1
 ```
 
 The prior butterfly experiment asked whether sharing small butterfly-style
@@ -38,10 +45,9 @@ on local OpenWebText GPT-2 tokens and compares:
 - the best layout from a fixed random search budget,
 - and a maximum-depth-distance sharing layout.
 
-The tensorized basis-field task arc is in `docs/shared-basis-field/`.
-The earlier grouped shared-basis toy task arc is in
-`docs/shared-basis-sharing/`, and the earlier butterfly task arc is in
-`docs/butterfly-sharing/`.
+The current hard block-sharing task arc is in `docs/hard-block-sharing/`.
+Earlier exploratory arcs are in `docs/butterfly-sharing/`,
+`docs/shared-basis-field/`, and `docs/shared-basis-sharing/`.
 
 ## Quick smoke test
 

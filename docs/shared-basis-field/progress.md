@@ -1,5 +1,11 @@
 # Shared-Basis Parameter Field Progress
 
+- PIVOT (2026-07-03): User clarified that the tensorized shared-basis setup is
+  not compatible with the intended irregular-parameter-sharing claim because it
+  implements soft sharing through learned coefficients rather than real hard
+  irregular tying. Stopped the 3-seed `basis_100m_d16_w1024_bs4_r128_r512`
+  run while it was still on the first shared-baseline seed. Treat all
+  shared-basis results as evidence for a separate idea only.
 - EXPERIMENT (2026-07-03): Ran a one-seed 500-step scale sweep for the high-rank
   pair on 98M train tokens / 2M validation tokens, depth 16, width 1024. Search
   budget was four `basis_scale` values: 0.5, 1.0, 2.0, and 4.0. At equal
