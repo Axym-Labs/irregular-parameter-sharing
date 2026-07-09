@@ -1,5 +1,9 @@
 # Hard Irregular Block Sharing Progress
 
+- USER (2026-07-09): User confirmed the unrelated `pptrain` GPU job has
+  finished and asked to continue. Verified the RTX 5090 is free and the
+  corrected `batch_size=8`, `grad_accum=6` hard-sharing run has not yet
+  started at `runs/hard_block_100m_d16_w1024_c16_b128_b8ga6_search12/`.
 - USER (2026-07-03): Clarified that the tensorized shared-basis pivot is not
   compatible with the intended idea because it is soft sharing through learned
   coefficients, not real irregular parameter sharing. Requested changing the
