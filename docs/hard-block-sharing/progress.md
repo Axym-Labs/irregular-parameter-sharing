@@ -1,5 +1,13 @@
 # Hard Irregular Block Sharing Progress
 
+- RUN CONTROL (2026-07-10): The corrected long run was externally terminated
+  with exit code 143 after about four hours, during seed 2's unshared final
+  run at step 3000. Evidence points to session/process management rather than
+  model failure: no Python traceback, no result files because the harness writes
+  final artifacts only on completion, GPU memory was free afterward, and the
+  live log contains completed search plus eight completed final runs. Added a
+  final-only resume path via `--best-layout-seed`; the completed search selected
+  best layout seed `10005`.
 - USER (2026-07-09): User confirmed the unrelated `pptrain` GPU job has
   finished and asked to continue. Verified the RTX 5090 is free and the
   corrected `batch_size=8`, `grad_accum=6` hard-sharing run has not yet

@@ -476,6 +476,18 @@ def run_suite(args: argparse.Namespace) -> None:
                 "best_val_loss": best["val_loss"],
             },
         )
+    elif args.best_layout_seed >= 0:
+        best_layout_seed = args.best_layout_seed
+        best_schedule = balanced_random_schedule(args.depth, args.chunks, args.shared_blocks, best_layout_seed)
+        append_event(
+            out,
+            {
+                "event": "search_reused",
+                "best_layout_seed": best_layout_seed,
+                "source": "best_layout_seed_arg",
+                "schedule_stats": schedule_stats(best_schedule),
+            },
+        )
 
     schedules = {
         "unshared": unshared_schedule(args.depth, args.chunks),
@@ -611,6 +623,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--search-budget", type=int, default=12)
     parser.add_argument("--search-seed", type=int, default=10_000)
+    parser.add_argument("--best-layout-seed", type=int, default=-1)
     parser.add_argument("--random-final-seed", type=int, default=20_000)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--final-seeds", default="0,1,2")
